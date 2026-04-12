@@ -1,0 +1,77 @@
+pipeline {
+    agent any
+
+    tools {
+        nodejs 'nodejs'
+    }
+
+    stages {
+
+        stage('Clonar o hub de leitura integrado') {
+            steps {
+                bat '''
+                    if exist hub-de-leitura-integrado2 rmdir /s /q hub-de-leitura-integrado2
+                    git clone https://github.com/EBAC-QE/hub-de-leitura-integrado2.git
+                '''
+            }
+        }
+
+        stage('Instalar dependencias do projeto') {
+            steps {
+                dir('hub-de-leitura-integrado2') {
+                    bat 'call npm ci'
+                }
+            }
+        }
+
+        stage('Subir aplicacao') {
+            steps {
+                dir('hub-de-leitura-integrado2') {
+                    bat 'start /B npm start'
+                }
+            }
+        }
+
+        stage('Clonar o projeto de teste') {
+            steps {
+                bat '''
+                    if exist hub-de-leitura-teste-ui-task rmdir /s /q hub-de-leitura-teste-ui-task
+                    git clone https://github.com/richiellamartillo/hub-de-leitura-teste-ui-task.git
+                '''
+            }
+        }
+
+        stage('Instalar dependencias do projeto de teste') {
+            steps {
+                dir('hub-de-leitura-teste-ui-task') {
+                    bat 'call npm ci'
+                }
+            }
+        }
+
+        stage('Esperar app subir') {
+            steps {
+                dir('hub-de-leitura-teste-ui-task') {
+                    bat 'npx wait-on http://localhost:3000'
+                }
+            }
+        }
+
+        stage('Executar os testes automatizados') {
+            steps {
+                dir('hub-de-leitura-teste-ui-task') {
+                    bat 'call npx cypress run'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            dir('hub-de-leitura-teste-ui-task') {
+                archiveArtifacts artifacts: 'cypress/screenshots/**/*.*,cypress/videos/**/*.*', allowEmptyArchive: true
+            }
+            bat 'taskkill /F /IM node.exe || exit 0'
+        }
+    }
+}
