@@ -62,7 +62,7 @@ afterEach(() => {
     cy.get('#terms-agreement').check()
     cy.get('#register-btn').click()
 
-    // ✅ validación 
+    
     cy.url().should('include', 'dashboard.html')
     
     cy.contains('Franco').should('be.visible')

@@ -6,7 +6,6 @@
   "scripts": {
     "test": "npx cypress run --browser chrome",
     "cy:report": "npx cypress run --browser chrome --record --key c44db669-cca2-4f69-b0d2-ad26f320f499"
-
   },
   "repository": {
     "type": "git",
@@ -24,6 +23,7 @@
     "cypress": "^15.9.0"
   },
   "devDependencies": {
-    "@faker-js/faker": "^10.3.0"
+    "@faker-js/faker": "^10.3.0",
+    "wait-on": "^9.0.5"
   }
 }
