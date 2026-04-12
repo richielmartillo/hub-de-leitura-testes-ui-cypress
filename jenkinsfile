@@ -6,37 +6,11 @@ pipeline {
     }
 
     stages {
-
-        stage('Clonar o hub de leitura integrado') {
-            steps {
-                bat '''
-                    if exist hub-de-leitura-integrado2 rmdir /s /q hub-de-leitura-integrado2
-                    git clone https://github.com/EBAC-QE/hub-de-leitura-integrado2.git
-                '''
-            }
-        }
-
-        stage('Instalar dependencias do projeto') {
-            steps {
-                dir('hub-de-leitura-integrado2') {
-                    bat 'call npm ci'
-                }
-            }
-        }
-
-        stage('Subir aplicacao') {
-            steps {
-                dir('hub-de-leitura-integrado2') {
-                    bat 'start /B npm start'
-                }
-            }
-        }
-
-        stage('Clonar o projeto de teste') {
+        stage('Clonar projeto de teste') {
             steps {
                 bat '''
                     if exist hub-de-leitura-teste-ui-task rmdir /s /q hub-de-leitura-teste-ui-task
-                    git clone https://github.com/richiellamartillo/hub-de-leitura-teste-ui-task.git
+                    git clone https://github.com/richielmartillo/hub-de-leitura-teste-ui-task.git
                 '''
             }
         }
