@@ -42,7 +42,6 @@ Verifique os scripts em package.json para nomes específicos (por exemplo, test:
 Os artefatos serão gerados na pasta indicada pelo projeto (ex.: dist, build).
 
 ## Variáveis de ambiente
-Se houver um arquivo exemplo (.env.example), copie para .env e ajuste conforme necessário:
 - cp .env.example .env
 
 ## Contribuição
