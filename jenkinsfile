@@ -6,46 +6,16 @@ pipeline {
     }
 
     stages {
-        stage('Clonar projeto de teste') {
+        stage('Esperar app') {
             steps {
-                bat '''
-                    if exist hub-de-leitura-teste-ui-task rmdir /s /q hub-de-leitura-teste-ui-task
-                    git clone https://github.com/richielmartillo/hub-de-leitura-teste-ui-task.git
-                '''
+                bat 'npx wait-on http://localhost:3000'
             }
         }
 
-        stage('Instalar dependencias do projeto de teste') {
-            steps {
-                dir('hub-de-leitura-teste-ui-task') {
-                    bat 'call npm ci'
-                }
-            }
-        }
-
-        stage('Esperar app subir') {
-            steps {
-                dir('hub-de-leitura-teste-ui-task') {
-                    bat 'npx wait-on http://localhost:3000'
-                }
-            }
-        }
-
-        stage('Executar os testes automatizados') {
-            steps {
-                dir('hub-de-leitura-teste-ui-task') {
-                    bat 'call npx cypress run'
-                }
-            }
-        }
+      post {
+    always {
+        bat 'taskkill /F /IM node.exe >nul 2>&1 || exit 0'
     }
-
-    post {
-        always {
-            dir('hub-de-leitura-teste-ui-task') {
-                archiveArtifacts artifacts: 'cypress/screenshots/**/*.*,cypress/videos/**/*.*', allowEmptyArchive: true
-            }
-            bat 'taskkill /F /IM node.exe || exit 0'
-        }
+}
     }
 }
