@@ -165,4 +165,4 @@ Richard Marlon Balestrim, conforme autoria registrada no histórico de commits d
 
 ## Créditos
 
-Os metadados do projeto fazem referência à organização `EBAC-QE` e o histórico de commits menciona a continuidade de um curso. Não há, porém, uma menção textual ao nome completo do curso no conteúdo versionado analisado; por isso, este README não atribui formalmente o projeto ao curso de Engenharia de Qualidade de Software da EBAC sem confirmação adicional.
+Projeto desenvolvido como parte dos estudos do curso de Engenharia de Qualidade de Software da EBAC, com adaptações, melhorias e documentação realizadas por Richard Marlon Balestrim.
