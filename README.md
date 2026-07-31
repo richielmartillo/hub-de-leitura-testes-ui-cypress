@@ -159,27 +159,6 @@ No diretório local analisado foram encontrados arquivos em `cypress/screenshots
 - Asserções de URL, visibilidade, texto de alerta e contador para verificar o resultado das ações.
 - Separação dos testes por funcionalidade.
 
-## Situação atual para execução
-
-A análise estática identificou um `})` excedente no final de `cypress/e2e/cadastro.cy.js`. Enquanto esse fechamento permanecer, a especificação não poderá ser interpretada corretamente pelo Cypress. Além disso, três cenários desse arquivo estão fora do bloco `describe`, o que reduz o compartilhamento dos hooks de navegação definidos nele. Esses pontos não foram alterados nesta atualização documental.
-
-No ambiente analisado, o pacote do Cypress estava presente, mas seu binário ainda não havia sido instalado; execute `npm ci` antes da primeira execução.
-
-## Possíveis melhorias futuras
-
-- Corrigir a estrutura de blocos em `cadastro.cy.js` e manter os cenários relacionados dentro do respectivo `describe`.
-- Criar scripts npm explícitos para execução interativa e por especificação.
-- Substituir seletores posicionais do catálogo por seletores mais estáveis e semânticos.
-- Centralizar massas de dados de contato e credenciais de teste em fixtures ou variáveis de ambiente apropriadas.
-- Evoluir a pipeline Jenkins para instalar dependências, executar a suíte e publicar evidências, caso esse seja o objetivo do pipeline.
-
-## Como contribuir
-
-1. Crie uma branch a partir da branch de trabalho.
-2. Faça alterações focadas e mantenha os testes legíveis.
-3. Com a aplicação disponível, execute os cenários afetados antes de enviar a mudança.
-4. Abra um pull request descrevendo o contexto, os cenários impactados e a forma de validação.
-
 ## Autor
 
 Richard Marlon Balestrim, conforme autoria registrada no histórico de commits do repositório.
