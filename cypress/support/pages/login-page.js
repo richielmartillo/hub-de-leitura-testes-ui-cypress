@@ -10,8 +10,8 @@ class LoginPage {
   }
 
   fazerLogin(email, senha) {
-    if (email)this.campoEmail().clear().type(email)
-    this.campoSenha().clear().type(senha)
+    if (email) this.campoEmail().clear().type(email)
+    this.campoSenha().clear().type(senha, { log: false })
     this.botaoLogin().click()
   }
 }

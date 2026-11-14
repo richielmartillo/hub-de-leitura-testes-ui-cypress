@@ -1,168 +1,125 @@
-# Automação de Testes E2E — Hub de Leitura
+# Automação E2E — Hub de Leitura
 
-Suíte de testes automatizados de interface para a aplicação **Hub de Leitura**. O projeto usa Cypress para exercitar os fluxos do usuário em navegador, incluindo autenticação, cadastro, catálogo, busca, cesta e formulário de contato.
+Suíte de testes automatizados de interface para validar fluxos essenciais da aplicação **Hub de Leitura** usando Cypress 15 e JavaScript. Este repositório contém a automação, não o código-fonte da aplicação testada: a aplicação precisa ser iniciada separadamente e estar acessível pelo navegador usado nos testes.
 
-> Este repositório contém a automação, e não o código-fonte da aplicação testada. A aplicação Hub de Leitura precisa estar em execução em `http://localhost:3000` para que a suíte possa acessá-la.
+## Objetivo e escopo
 
-## Objetivo
+O projeto demonstra automação de jornadas reais pela interface, organização de cenários por funcionalidade e uso de diferentes estratégias de reutilização. Os testes cobrem:
 
-Validar, pela interface, comportamentos essenciais do Hub de Leitura e praticar recursos de automação com Cypress: comandos customizados, fixtures, geração de dados com Faker e abstrações de páginas.
+- Login de usuário e administrador (credenciais fornecidas pelo ambiente).
+- Cadastro, validação de campo obrigatório e jornada de cadastro seguida de login.
+- Busca de livros com massa de dados em fixture.
+- Inclusão de livros na cesta, contador, alertas e página de detalhes.
+- Envio válido e validação de campos obrigatórios do formulário de contato.
 
-## Funcionalidades e fluxos cobertos
+## Tecnologias
 
-- Login com credenciais fixas, massa de dados em fixture e comando customizado.
-- Cadastro de usuários com dados estáticos, e-mail dinâmico, dados gerados pelo Faker, fixture e comando customizado.
-- Fluxo de ponta a ponta: cadastrar um usuário e realizar seu login.
-- Pesquisa de livros no catálogo, inclusive a partir de dados de fixture.
-- Inclusão de livros na cesta, validação de contador, alerta de sucesso e acesso à página de detalhes de um livro.
-- Envio válido e validações de campos obrigatórios do formulário de contato.
+- JavaScript, Node.js e npm.
+- Cypress 15 para automação E2E no Chrome.
+- `@faker-js/faker` para nomes e dados únicos de cadastro.
+- `wait-on` para aguardar a aplicação externa no pipeline.
+- Jenkins Declarative Pipeline para instalação, espera e execução da suíte.
 
-## Tipos de testes realizados
-
-- Testes end-to-end (E2E) de interface web.
-- Testes funcionais de fluxos positivos.
-- Testes de validação de campos obrigatórios no contato e no cadastro.
-- Testes orientados a dados, com fixtures JSON e dados dinâmicos gerados pelo Faker.
-
-## Tecnologias e ferramentas
-
-- [Cypress](https://www.cypress.io/) — framework de automação de interface. A versão declarada é `^15.9.0`; o `package-lock.json` fixa a instalação atual em `15.10.0`.
-- JavaScript (CommonJS no projeto, com imports ES nos arquivos de teste).
-- [@faker-js/faker](https://fakerjs.dev/) — geração de nomes e e-mails em cenários de cadastro.
-- `wait-on` — espera pela disponibilidade da aplicação no Jenkinsfile.
-- Jenkins — há um `jenkinsfile` com etapa de espera por `http://localhost:3000`.
-- npm — gerenciamento de dependências e execução de scripts.
-
-## Estrutura principal
+## Estrutura
 
 ```text
-.
-├── cypress/
-│   ├── e2e/                 # Especificações de testes E2E
-│   ├── fixtures/            # Massas de dados JSON
-│   └── support/
-│       ├── commands.js      # Comandos customizados do Cypress
-│       ├── e2e.js           # Carregamento global do suporte
-│       └── pages/           # Abstrações de Login e Cadastro
-├── cypress.config.js        # Configuração do Cypress
-├── jenkinsfile              # Pipeline Jenkins
-├── package.json             # Dependências e scripts npm
-└── package-lock.json        # Versões travadas das dependências
+cypress/
+  e2e/                 Especificações separadas por funcionalidade
+  fixtures/            Massa de livros, senha de cadastro e nomes das variáveis de login
+  support/
+    commands.js        Comandos reutilizáveis de login e cadastro
+    e2e.js              Carregamento global dos comandos
+    pages/              Page Objects de login e cadastro
+cypress.config.js       URL-base e configuração de credenciais por ambiente
+jenkinsfile             Pipeline Jenkins
+package.json            Dependências e scripts npm
+package-lock.json       Versões travadas das dependências
 ```
-
-As pastas `node_modules`, `cypress/screenshots` e `cypress/videos` não fazem parte da estrutura versionada principal. Elas são geradas localmente ou pela execução dos testes e estão ignoradas no Git.
 
 ## Pré-requisitos
 
-- Git.
-- Node.js e npm.
-- Google Chrome, pois o script `test` executa o Cypress com `--browser chrome`.
-- A aplicação Hub de Leitura em execução e acessível em `http://localhost:3000`.
+- Node.js compatível com as versões do lockfile (Cypress 15 e Faker requerem uma versão atual; use Node.js 20.19+ ou 22.13+ e npm 10+).
+- Google Chrome instalado e acessível ao processo Cypress.
+- Aplicação Hub de Leitura em execução e acessível, por padrão, em `http://localhost:3000`.
+- Para os cenários de login, uma conta de teste descartável configurada no ambiente. Os testes de usuário e administrador são marcados como ignorados quando as credenciais correspondentes não foram fornecidas.
 
-## Instalação e configuração
+Este repositório não contém nem inicia a aplicação. O endereço da aplicação deve ser acessível a partir da máquina ou agente que executa o Cypress.
 
-1. Clone o repositório e entre na pasta do projeto:
+## Instalação e execução local
 
-   ```bash
-   git clone https://github.com/richielmartillo/hub-de-leitura-teste-ui-task.git
-   cd hub-de-leitura-teste-ui-task
-   ```
-
-2. Instale exatamente as versões registradas no lockfile:
-
-   ```bash
-   npm ci
-   ```
-
-   Como alternativa, `npm install` também instala as dependências respeitando as faixas do `package.json`.
-
-3. Inicie a aplicação Hub de Leitura em outro terminal na porta `3000`. O projeto não possui scripts `start` ou `dev`; portanto, a inicialização da aplicação é externa a este repositório.
-
-4. Confirme que `http://localhost:3000` está acessível. Essa é a `baseUrl` definida em `cypress.config.js`.
-
-## Execução dos testes
-
-### Modo interativo
-
-Não há script npm específico para a interface do Cypress. Execute diretamente:
+Clone este repositório (não o projeto upstream da EBAC):
 
 ```bash
-npx cypress open
+git clone https://github.com/richielmartillo/hub-de-leitura-testes-ui-cypress.git
+cd hub-de-leitura-testes-ui-cypress
+npm ci
 ```
 
-Na janela do Cypress, selecione o navegador e a especificação desejada.
-
-### Modo headless
-
-O script existente no `package.json` executa todos os testes no Chrome:
+Inicie a aplicação Hub de Leitura em outro processo. Para usar uma URL diferente, configure `CYPRESS_BASE_URL` antes de executar Cypress. As credenciais de login são opcionais para a suíte inteira, mas necessárias nos testes de login:
 
 ```bash
+# Linux/macOS — URL e conta descartável de usuário
+export CYPRESS_BASE_URL=http://localhost:3000
+export TEST_USER_EMAIL=usuario-de-teste@example.com
+export TEST_USER_PASSWORD='senha-descartavel'
+
+# Opcional: os testes administrativos só executam quando ambas estiverem configuradas
+export TEST_ADMIN_EMAIL=admin-de-teste@example.com
+export TEST_ADMIN_PASSWORD='senha-descartavel'
+
 npm test
 ```
 
-Equivale a:
+No PowerShell, use `$env:CYPRESS_BASE_URL = 'http://localhost:3000'` e equivalentes `$env:TEST_USER_EMAIL`, `$env:TEST_USER_PASSWORD`, `$env:TEST_ADMIN_EMAIL` e `$env:TEST_ADMIN_PASSWORD`. Não grave senhas em fixtures, no README, no Jenkinsfile ou em arquivos versionados. O `.gitignore` já exclui arquivos `.env`; a suíte não carrega `.env` automaticamente.
+
+Comandos adicionais:
 
 ```bash
-npx cypress run --browser chrome
-```
+# Abrir o Cypress interativo
+npx cypress open
 
-### Executar uma especificação
-
-Use a opção `--spec`. Exemplo para o teste de login:
-
-```bash
+# Executar uma especificação
 npx cypress run --browser chrome --spec "cypress/e2e/login.cy.js"
+
+# Gravar a execução no Cypress Cloud (requer chave configurada localmente)
+# Linux/macOS: export CYPRESS_RECORD_KEY=<chave>
+# PowerShell:  $env:CYPRESS_RECORD_KEY = '<chave>'
+npm run cy:report
 ```
 
-O `package.json` também possui o script `cy:report`, que executa o Cypress no Chrome com as opções `--record` e `--key` já configuradas no projeto.
+`CYPRESS_RECORD_KEY` não deve ser colocada no `package.json`. No Jenkins, configure-a no armazenamento de credenciais e disponibilize-a como variável de ambiente apenas quando a gravação no Cloud for desejada. O script `cy:report` requer também a configuração do projeto Cypress Cloud.
 
-## Configuração do Cypress
+## Estratégias de automação
 
-O arquivo `cypress.config.js` define a `baseUrl` como `http://localhost:3000/`, habilita a gravação de vídeo (`video: true`) e contém o identificador de projeto `vxujf3`. O arquivo global `cypress/support/e2e.js` carrega `commands.js` antes das especificações.
+- Especificações agrupadas por funcionalidade em `cypress/e2e/`.
+- Comandos `cy.login()` e `cy.preencherCadastro()` para ações reutilizadas; dados de senha não são adicionados ao log de comandos.
+- Page Objects para centralizar ações e seletores das telas de login e cadastro.
+- Fixtures para dados previsíveis e Faker/UUID para gerar e-mails únicos em cadastros.
+- Asserções baseadas em estado observável da interface e seletores por IDs, nomes de campos e texto do livro, evitando índices de cards.
+- Os testes usam os elementos existentes na aplicação externa. Como este repositório não contém seu HTML, não presume a existência de `data-cy` ou `data-testid`.
 
-Há dois comandos customizados confirmados em `cypress/support/commands.js`:
+## Jenkins
 
-- `cy.login(email, senha)`: acessa a página de login, preenche credenciais e envia o formulário.
-- `cy.preencherCadastro(nome, email, telefone, senha, confirmarSenha)`: preenche, aceita os termos e envia o cadastro.
+O `jenkinsfile` executa `npm ci`, aguarda a URL configurada em `HUB_APP_URL` (padrão `http://localhost:3000`) e roda `npm test`. Falha se a instalação, espera ou suíte falhar, e arquiva vídeos e screenshots do Cypress quando gerados.
 
-As classes em `cypress/support/pages/` encapsulam seletores e ações das páginas de login e cadastro. Elas são usadas em cenários dessas duas funcionalidades.
+Configure no Jenkins:
 
-## Cenários por arquivo de teste
+1. A instalação de Node.js nomeada `nodejs` pelo NodeJS plugin.
+2. Chrome no agente Jenkins.
+3. A aplicação externa iniciada antes da etapa de espera, e `HUB_APP_URL` apontando para um endereço alcançável pelo agente. A pipeline não clona nem inicializa esse outro projeto porque não há URL, caminho ou comando de inicialização fornecido neste repositório.
+4. Opcionalmente, variáveis `TEST_USER_EMAIL` / `TEST_USER_PASSWORD` e `TEST_ADMIN_EMAIL` / `TEST_ADMIN_PASSWORD` através das credenciais do Jenkins. Não defina valores sensíveis no Jenkinsfile.
+5. Opcionalmente, a credencial `CYPRESS_RECORD_KEY` para execuções gravadas no Cypress Cloud.
 
-| Arquivo | Cenários cobertos |
-| --- | --- |
-| `login.cy.js` | Quatro variações de login: preenchimento direto, comando customizado, conta administrativa e fixture `usuario.json`. |
-| `cadastro.cy.js` | Cadastro com dados estáticos, Faker, fixture `usuario2.json`, comando customizado, abstração de página e validação de nome vazio. |
-| `end-to-end.cy.js` | Cadastro de usuário com dados dinâmicos seguido de login com a mesma conta. |
-| `catalogo-busca.cy.js` | Busca por `1984`, por livro importado e carregado via fixture, além de iteração pela lista de livros. |
-| `catalogo.cy.js` | Inclusão de livros na cesta, ações em múltiplos botões e por índice, contador, alertas e detalhe de `Dom Casmurro`/`A Metamorfose`. |
-| `contato.cy.js` | Envio válido e mensagens de erro para nome, e-mail, assunto e mensagem não preenchidos. |
+O agente pode ser Windows ou Unix; o pipeline escolhe `bat` ou `sh`. A URL precisa ser acessível a partir do agente de execução.
 
-## Fixtures
+## Limitações conhecidas
 
-- `usuario.json`: credenciais de usuário utilizadas no teste de login.
-- `usuario2.json`: senha utilizada em um cenário de cadastro.
-- `livros.json`: títulos e categorias usados nos testes de busca.
+- A aplicação testada e sua configuração de dados/contas são dependências externas; sem ela os testes não podem ser validados.
+- Os testes de login são ignorados quando as credenciais não são fornecidas. Use contas descartáveis preparadas na aplicação.
+- Os seletores disponíveis refletem o HTML atual da aplicação e ainda podem precisar de ajustes caso essa aplicação mude. Recomenda-se que o projeto da aplicação adicione atributos estáveis `data-cy`/`data-testid` para automação, mas nenhum atributo desse tipo é presumido ou inventado nesta suíte.
+- Não há relatório JUnit configurado; o Jenkins arquiva as evidências de vídeo e screenshot do Cypress.
+- A gravação Cypress Cloud é opcional e requer chave e projeto configurados no ambiente.
 
-## Screenshots e vídeos
+## Créditos e origem
 
-O Cypress está configurado para gravar vídeos em execuções de teste. Há também um `afterEach` em `cadastro.cy.js` que solicita um screenshot ao final de cada cenário daquele arquivo.
-
-No diretório local analisado foram encontrados arquivos em `cypress/screenshots` e `cypress/videos`, incluindo evidências de `cadastro.cy.js`. Essas evidências são ignoradas pelo Git por meio do `.gitignore`, portanto não são enviadas ao repositório. Em uma execução padrão do Cypress, screenshots também podem ser criados quando um teste falha.
-
-## Boas práticas identificadas
-
-- Centralização de configurações no `cypress.config.js` e uso de `baseUrl` em vez de URLs completas nos testes.
-- Reuso de ações recorrentes por comandos customizados.
-- Encapsulamento de seletores e ações de login e cadastro em classes de página.
-- Uso de fixtures para dados previsíveis e Faker/`Date.now()` para reduzir colisões de e-mail em cadastros.
-- Asserções de URL, visibilidade, texto de alerta e contador para verificar o resultado das ações.
-- Separação dos testes por funcionalidade.
-
-## Autor
-
-Richard Marlon Balestrim, conforme autoria registrada no histórico de commits do repositório.
-
-## Créditos
-
-Projeto desenvolvido como parte dos estudos do curso de Engenharia de Qualidade de Software da EBAC, com adaptações, melhorias e documentação realizadas por Richard Marlon Balestrim.
+A automação foi desenvolvida no contexto dos estudos do curso de Engenharia de Qualidade de Software da **EBAC**, com adaptações, testes e documentação de Richard Marlon Balestrim. A aplicação Hub de Leitura e o projeto-base de referência da EBAC são distintos deste repositório de automação. A referência upstream indicada anteriormente no projeto é [EBAC-QE/hub-de-leitura-teste-ui](https://github.com/EBAC-QE/hub-de-leitura-teste-ui); este repositório de portfólio mantém os créditos sem confundir a origem da aplicação com o código dos testes.

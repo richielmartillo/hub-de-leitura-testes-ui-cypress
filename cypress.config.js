@@ -1,13 +1,15 @@
-const { defineConfig } = require("cypress");
+const { defineConfig } = require('cypress');
 
 module.exports = defineConfig({
-  allowCypressEnv: false,   
   e2e: {
-    setupNodeEvents(on, config) {
-      // implement node event listeners here
+    baseUrl: process.env.CYPRESS_BASE_URL || 'http://localhost:3000/',
+    projectId: 'vxujf3',
+    video: true,
+    env: {
+      testUserEmail: process.env.TEST_USER_EMAIL || '',
+      testUserPassword: process.env.TEST_USER_PASSWORD || '',
+      adminEmail: process.env.TEST_ADMIN_EMAIL || '',
+      adminPassword: process.env.TEST_ADMIN_PASSWORD || '',
     },
-    baseUrl: "http://localhost:3000/",
-    projectId: "vxujf3",
-    video: true
   },
 });

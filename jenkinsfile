@@ -2,20 +2,52 @@ pipeline {
     agent any
 
     tools {
+        // Configure this NodeJS installation in Jenkins' NodeJS plugin.
         nodejs 'nodejs'
     }
 
+    environment {
+        // HUB_APP_URL must point to an app already running and reachable by this agent.
+        CYPRESS_BASE_URL = "${env.HUB_APP_URL ?: 'http://localhost:3000'}"
+    }
+
     stages {
-        stage('Esperar app') {
+        stage('Install dependencies') {
             steps {
-                bat 'npx wait-on http://localhost:3000'
+                shOrBat('npm ci')
             }
         }
 
-      post {
-    always {
-        bat 'taskkill /F /IM node.exe >nul 2>&1 || exit 0'
+        stage('Wait for external application') {
+            steps {
+                script {
+                    if (isUnix()) {
+                        sh 'npx wait-on --timeout 120000 "$CYPRESS_BASE_URL"'
+                    } else {
+                        bat 'npx wait-on --timeout 120000 %CYPRESS_BASE_URL%'
+                    }
+                }
+            }
+        }
+
+        stage('Run Cypress E2E tests') {
+            steps {
+                shOrBat('npm test')
+            }
+        }
+    }
+
+    post {
+        always {
+            archiveArtifacts artifacts: 'cypress/videos/**/*.mp4,cypress/screenshots/**/*', allowEmptyArchive: true
+        }
     }
 }
+
+def shOrBat(command) {
+    if (isUnix()) {
+        sh command
+    } else {
+        bat command
     }
 }
