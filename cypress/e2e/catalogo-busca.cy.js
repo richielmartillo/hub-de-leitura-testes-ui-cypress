@@ -1,34 +1,33 @@
-/// <reference types="cypress" />
-import catalogo from '../fixtures/livros.json'
 describe('Funcionalidade: Busca no catálogo', () => {
   beforeEach(() => {
-    cy.visit('catalog.html')
-  })
-
-  it('Deve fazer a busca do livro 1984 com sucesso', () => {
-    cy.get('#search-input').type('1984')
-    cy.get('.card > .card-body').should('contain', '1984')
-  })
-
-  it('Deve fazer a busca de um livro do arquivo de massa de dados', () => {
-    cy.get('#search-input').type(catalogo[1].livro)
-    cy.get('.card > .card-body').should('contain', catalogo[1].livro)
-  })
-
-  it('Deve fazer a busca de um livro usando Fixture', () => {
-    cy.fixture('livros').then((cat)=>{
-    cy.get('#search-input').type(cat[1].livro)
-    cy.get('.card > .card-body').should('contain', cat[1].livro)
-    
-  })
+    cy.visit('catalog.html');
   });
 
-  it('Deve validar todos os livros da lista', () => {
-    cy.fixture('livros').then((cat) =>{
-    cat.forEach(item =>{
-    cy.get('#search-input').clear().type(item.livro )
-    cy.get('.card > .card-body').should('contain', item.livro)
-      })
-    })
+  it('Deve buscar o livro 1984', () => {
+    cy.get('#search-input').type('1984');
+    cy.get('.card').should('contain', '1984');
   });
-})
+
+  it('Deve buscar um livro usando importação da fixture', () => {
+    cy.fixture('livros').then((catalogo) => {
+      cy.get('#search-input').type(catalogo[1].livro);
+      cy.get('.card').should('contain', catalogo[1].livro);
+    });
+  });
+
+  it('Deve buscar um livro carregado com cy.fixture', () => {
+    cy.fixture('livros').then((catalogo) => {
+      cy.get('#search-input').type(catalogo[1].livro);
+      cy.get('.card').should('contain', catalogo[1].livro);
+    });
+  });
+
+  it('Deve validar a busca de todos os livros da fixture', () => {
+    cy.fixture('livros').then((catalogo) => {
+      catalogo.forEach(({ livro }) => {
+        cy.get('#search-input').clear().type(livro);
+        cy.get('.card').should('contain', livro);
+      });
+    });
+  });
+});

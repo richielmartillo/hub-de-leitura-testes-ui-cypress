@@ -1,4 +1,4 @@
 {
-  "email": "usuario@teste.com",
-  "senha": "user123"
+  "emailEnv": "testUserEmail",
+  "passwordEnv": "testUserPassword"
 }
